@@ -19,8 +19,9 @@ const UserSchema = new mongoose.Schema({
     select: false,
   },
   pic: {
-    type : String,
-    default : "sample image"
+    type: String,
+    default:
+      "https://res.cloudinary.com/dwecsqtkp/image/upload/v1678124995/default-avatar-profile-vector-user-260nw-1705357234_ueg2il.webp",
   },
   role: {
     type: String,

@@ -1,5 +1,6 @@
 const cors = require("cors");
 const express = require("express");
+const connectDatabase = require("./config/dbconnect");
 const app = express();
 
 app.use(express.json());
@@ -21,11 +22,8 @@ app.use("/api/user",userRoute)
 
 
 // connecting to the mongodb server
+connectDatabase()
 
-const mongoose = require("mongoose");
-mongoose.set("strictQuery", false);
-mongoose.connect(process.env.MONGODB_URI).then(() => {
-  app.listen(process.env.PORT, () => {
-    console.log(`listening on ${process.env.PORT}`);
-  });
+app.listen(process.env.PORT, () => {
+  console.log(`listening on ${process.env.PORT}`);
 });

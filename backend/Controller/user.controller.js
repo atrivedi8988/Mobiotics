@@ -4,27 +4,27 @@ const nodemailer = require("nodemailer");
 const { thrownErrorMessage } = require("../Middlewares/responseMessage");
 const crypto = require("crypto");
 const { strongPassword } = require("../Middlewares/extrafunctionalityProblem");
+const generateToken = require("../config/generateToken");
 
 // Register New User
 
 exports.registerUser = async (req, res) => {
   try {
-    let user = await User.findOne({ email: req.body.email });
-  if (user) {
-    return thrownErrorMessage(
-      res,
-      400,
-      "User is already exist with this email id"
-    );
-  } else {
     const { name, email, password, confirmPassword } = req.body;
-    if (strongPassword(password)===true) {
+    if (strongPassword(password) === true) {
       if (password === confirmPassword) {
-        user = await User.create({ name, email, password, confirmPassword });
+        const user = await User.create({
+          name,
+          email,
+          password,
+          confirmPassword,
+        });
         user.save();
+        const token = generateToken(user._id);
         res.status(201).json({
           success: true,
-          user,
+          message : "User signup successfully",
+          token,
         });
       } else {
         return thrownErrorMessage(
@@ -36,11 +36,9 @@ exports.registerUser = async (req, res) => {
     } else {
       return thrownErrorMessage(res, 400, strongPassword(password));
     }
-  }
   } catch (error) {
-    return thrownErrorMessage(res,500,error.message)
+    return thrownErrorMessage(res, 500, error.message);
   }
-  
 };
 
 // Login a User
@@ -51,11 +49,7 @@ exports.loggedInUser = async (req, res) => {
     return thrownErrorMessage(res, 404, "user not found. Wrong credentials");
   }
 
-  const token = jwt.sign(
-    { id: user._id, name: user.name, email: user.email },
-    process.env.JWT_SECRET_KEY,
-    { expiresIn: process.env.JWT_EXPIARY_TIME }
-  );
+  const token = generateToken(user._id);
 
   res.status(200).json({
     success: true,
