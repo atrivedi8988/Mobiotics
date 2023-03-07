@@ -15,7 +15,7 @@ import { useNavigate } from "react-router-dom";
 function Login() {
   const [show, setShow] = useState(false);
   const handleClick = () => setShow(!show);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [formstate, setFormState] = useState({
     email: "",
     password: "",
@@ -27,20 +27,21 @@ function Login() {
       [name]: value,
     });
   };
-  const submitHandler = async() => {
+  const submitHandler = async () => {
     try {
-      let res = await axios.post("http://localhost:8080/api/user/login", formstate)
+      let res = await axios.post(
+        "http://localhost:8080/api/user/login",
+        formstate
+      );
       localStorage.setItem("token", res.data.token);
       axios.defaults.headers.common[
         "Authorization"
       ] = `Bearer ${localStorage.getItem("token")}`;
-      alert("login successfully");
+      alert(res.data.message);
+      navigate("/profile");
     } catch (error) {
-      alert(error.response.data.message)
+      alert(error.response.data.message);
     }
-    
-    navigate("/profile")
-    
   };
 
   const handleForgotPassword = () => {
@@ -78,7 +79,7 @@ function Login() {
             </InputRightElement>
           </InputGroup>
         </FormControl>
-        
+
         <Text
           onClick={handleForgotPassword}
           color="blue"

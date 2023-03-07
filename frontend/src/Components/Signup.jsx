@@ -40,10 +40,11 @@ function Signup() {
         "Authorization"
       ] = `Bearer ${localStorage.getItem("token")}`;
       alert(res.data.message);
+      navigate("/profile")
     } catch (error) {
       alert(error.response.data.message);
     }
-    navigate("/profile")
+   
   };
   return (
     <>

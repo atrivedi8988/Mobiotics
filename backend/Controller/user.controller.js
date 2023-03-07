@@ -19,11 +19,10 @@ exports.registerUser = async (req, res) => {
           password,
           confirmPassword,
         });
-        user.save();
         const token = generateToken(user._id);
         res.status(201).json({
           success: true,
-          message : "User signup successfully",
+          message: "User signup successfully",
           token,
         });
       } else {
@@ -44,19 +43,27 @@ exports.registerUser = async (req, res) => {
 // Login a User
 
 exports.loggedInUser = async (req, res) => {
-  const user = await User.findOne(req.body);
-  if (!user) {
-    return thrownErrorMessage(res, 404, "user not found. Wrong credentials");
+  try {
+    const { email, password } = req.body;
+    const user = await User.findOne({ email }).select("+password");
+    console.log(user)
+    if (user && (await user.matchPassword(password))) {
+      const token = generateToken(user._id);
+
+      res.status(200).json({
+        success: true,
+        message: "Logged in successfully",
+        token,
+      });
+    } else {
+      return thrownErrorMessage(res, 404, "user not found. With this Email id");
+    }
+  } catch (error) {
+    return res.status(500).json({
+      error
+    })
+    // return thrownErrorMessage(res,500,error)
   }
-
-  const token = generateToken(user._id);
-
-  res.status(200).json({
-    success: true,
-    message: "Logged in successfully",
-    token,
-    user,
-  });
 };
 
 // Get Profile Authenticate User
@@ -86,13 +93,9 @@ exports.makeAdmin = async (req, res) => {
   }
   user = await User.findByIdAndUpdate(
     id,
-    { role: req.body.role },
-    {
-      new: true,
-      runValidators: true,
-    }
+    { role: req.body.role }
   );
-  user.save({ validateBeforeSave: true });
+  // user.save({ validateBeforeSave: false });
   res.status(200).json({
     success: true,
     user,

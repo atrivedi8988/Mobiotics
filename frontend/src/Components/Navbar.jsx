@@ -8,7 +8,7 @@ function Navbar() {
   const navigate = useNavigate();
   const logoutHandler = () => {
     localStorage.removeItem("token");
-    axios.defaults.headers.common["Authorization"] = "";
+    axios.defaults.headers.common["Authorization"] = `Bearer null`;
     navigate("/");
     // setLogout(!logout);
   };

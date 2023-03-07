@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from "react";
 import {
   Box,
   Container,
@@ -9,18 +9,27 @@ import {
   Tabs,
   Text,
 } from "@chakra-ui/react";
-import Login from './Login';
-import Signup from './Signup';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import Login from "./Login";
+import Signup from "./Signup";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 function HomePage() {
-    console.log(axios.defaults.headers.common["Authorization"])
+  const navigate = useNavigate();
+  // console.log(axios.defaults.headers.common["Authorization"].split(" ")[1]==="");
+  // console.log(axios.defaults.headers.common["Authorization"].split(" ")[1]);
+  
+  useEffect(() => {
+    if (axios.defaults.headers.common["Authorization"].split(" ")[1]!=="null") {
+      // console.log("/profile")
+      alert("first logged out");
+      navigate("/profile");
+    }
+  }, []);
+
   return (
     <div>
-        <Container
-        maxW="xl"
-      >
+      <Container maxW="xl">
         <Box
           bg="white"
           w="100%"
@@ -30,24 +39,24 @@ function HomePage() {
           //   bgColor={"transparent"}
           //   color="white"
         >
-          <Tabs variant='enclosed' size={"lg"} isFitted>
+          <Tabs variant="enclosed" size={"lg"} isFitted>
             <TabList mb="1em">
               <Tab>Login</Tab>
               <Tab>Sign Up</Tab>
             </TabList>
             <TabPanels>
               <TabPanel>
-                <Login/>
+                <Login />
               </TabPanel>
               <TabPanel>
-                <Signup/>
+                <Signup />
               </TabPanel>
             </TabPanels>
           </Tabs>
         </Box>
       </Container>
     </div>
-  )
+  );
 }
 
-export default HomePage
+export default HomePage;
