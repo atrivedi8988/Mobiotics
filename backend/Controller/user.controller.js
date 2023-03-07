@@ -5,6 +5,7 @@ const { thrownErrorMessage } = require("../Middlewares/responseMessage");
 const crypto = require("crypto");
 const { strongPassword } = require("../Middlewares/extrafunctionalityProblem");
 const generateToken = require("../config/generateToken");
+const { sendEmail } = require("../Middlewares/sendEmail");
 
 // Register New User
 
@@ -46,7 +47,7 @@ exports.loggedInUser = async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email }).select("+password");
-    console.log(user)
+    console.log(user);
     if (user && (await user.matchPassword(password))) {
       const token = generateToken(user._id);
 
@@ -60,8 +61,8 @@ exports.loggedInUser = async (req, res) => {
     }
   } catch (error) {
     return res.status(500).json({
-      error
-    })
+      error,
+    });
     // return thrownErrorMessage(res,500,error)
   }
 };
@@ -91,10 +92,7 @@ exports.makeAdmin = async (req, res) => {
   if (!user) {
     return thrownErrorMessage(res, 404, "User not found");
   }
-  user = await User.findByIdAndUpdate(
-    id,
-    { role: req.body.role }
-  );
+  user = await User.findByIdAndUpdate(id, { role: req.body.role });
   // user.save({ validateBeforeSave: false });
   res.status(200).json({
     success: true,
@@ -105,84 +103,132 @@ exports.makeAdmin = async (req, res) => {
 // Forgot Password
 
 exports.forgotPassword = async (req, res) => {
-  const user = await User.findOne(req.body);
-  if (user) {
-    const token = crypto.randomBytes(20).toString("hex");
-    // token = crypto.createHash("sha256").update(token).digest("hex");
+  const { email } = req.body;
+  try {
+    const user = await User.findOne({ email });
+    if (user) {
+      const token = crypto.randomBytes(20).toString("hex");
+      // // token = crypto.createHash("sha256").update(token).digest("hex");
 
-    user.resetPasswordToken = crypto
-      .createHash("sha256")
-      .update(token)
-      .digest("hex");
-    user.resetPasswordTokenExpiry = (Date.now() + 15 * 60 * 1000).toString();
+      user.resetPasswordToken = crypto
+        .createHash("sha256")
+        .update(token)
+        .digest("hex");
+      user.resetPasswordTokenExpiry = (Date.now() + 15 * 60 * 1000).toString();
 
-    user.save();
+      await user.save();
 
-    const link = `http://localhost:3000/reset/${user._id}/${user.resetPasswordToken}`;
-    // console.log(token)
-    // console.log(link)
-    // console.log(user)
-    try {
-      const transporter = nodemailer.createTransport({
-        host: "smtp.gmail.com",
-        port: 465,
-        secure: true,
-        auth: {
-          user: process.env.SMTP_EMAIL,
-          pass: process.env.SMTP_PASS,
-        },
-      });
-      const info = await transporter.sendMail({
-        from: process.env.SMTP_EMAIL,
-        to: req.body.email,
-        subject: "Password Reset",
-        html: `<a href=${link}>click here</a>, for reset your password`,
-      });
-      res.status(200).json({
-        success: true,
-        message: "Password Reset Email Sent... Please Check Your Email",
-      });
-    } catch (err) {
-      res.status(500).json({
-        success: false,
-        err,
-      });
+      const link = `http://localhost:3000/reset/${user._id}/${user.resetPasswordToken}`;
+
+      // console.log(token)
+      // console.log(link)
+      // console.log(user)
+      try {
+        await sendEmail({ email, link });
+
+        res.status(200).json({
+          success: true,
+          message: `Email sent to ${user.email} successfully`,
+        });
+      } catch (error) {
+        user.resetPasswordToken = undefined;
+        user.resetPasswordExpire = undefined;
+
+        await user.save({ validateBeforeSave: false });
+
+        return thrownErrorMessage(res, 500, "Server Error");
+      }
+    } else {
+      return thrownErrorMessage(res, 404, "User not found from this email");
     }
-  } else {
-    return thrownErrorMessage(res, 404, "User not found from this email");
+  } catch (error) {
+    return thrownErrorMessage(res, 500, "myServer Error");
   }
 };
 
 // Reset Password
 
 exports.resetPassword = async (req, res) => {
-  const { id, token } = req.params;
-  if (token && id) {
-    console.log(crypto.createHash("sha256").update(token).digest("hex"));
-    console.log(id);
-    const user = await User.findOne({ resetPasswordToken: token });
-    // const user = await User.findById(id)
-    // console.log(user)
-    if (user) {
-      if (user.resetPasswordTokenExpiry > Date.now()) {
-        await User.findByIdAndUpdate(user._id, {
-          $set: req.body,
-        });
-        user.resetPasswordToken = undefined;
-        user.resetPasswordTokenExpiry = undefined;
-
-        user.save();
-        res.status(200).json({
-          success: true,
-          message: "Password changed successfully",
-        });
-      } else {
-        return thrownErrorMessage(res, 500, "token is Expired");
-      }
-    } else {
-      return thrownErrorMessage(res, 404, "User not found. Invalid Link");
+  try {
+    const { id, token } = req.params;
+    const { password, confirmPassword } = req.body;
+  
+    const user = await User.findOne({
+      resetPasswordToken: token,
+      resetPasswordTokenExpiry: { $gt: Date.now() },
+    });
+    if (!user) {
+      return thrownErrorMessage(
+        res,
+        400,
+        "Reset Password token is invalid or has been expired"
+      );
     }
-  } else {
-    return thrownErrorMessage(res, 400, "Invalid Link");
+  
+    if (password !== confirmPassword) {
+      return thrownErrorMessage(res, 400, "Password does not match");
+    }
+    console.log(strongPassword(password));
+    if (strongPassword(password) === true) {
+      user.password = req.body.password;
+      user.resetPasswordToken = undefined;
+      user.resetPasswordExpire = undefined;
+  
+      await user.save();
+  
+      res.status(200).json({
+        success: true,
+        message: "Password chaged successfully",
+      });
+    } else {
+      return thrownErrorMessage(res, 400, strongPassword(password));
+    }
+  
+  } catch (error) {
+    return thrownErrorMessage(res,500,error.message)
   }
+ 
+  // sendToken(user, 200, res);
+
+  // if (token && id) {
+  //   // console.log(crypto.createHash("sha256").update(token).digest("hex"));
+  //   // console.log(id);
+  //   // console.log(await User.findById(id))
+  //   const user = await User.findOne({ resetPasswordToken: token });
+  //   // const user = await User.findById(id)
+  //   // console.log(user)
+  //   if (user) {
+  //     if (user.resetPasswordTokenExpiry > Date.now()) {
+  //       if (strongPassword(password) === true) {
+  //         if (password === confirmPassword) {
+  //           await User.findByIdAndUpdate(user._id, {
+  //             $set: { password },
+  //           });
+  //           user.resetPasswordToken = undefined;
+  //           user.resetPasswordTokenExpiry = undefined;
+
+  //           await user.save();
+  //           res.status(200).json({
+  //             success: true,
+  //             message: "Password changed successfully",
+  //           });
+  //         } else {
+  //           return thrownErrorMessage(
+  //             res,
+  //             400,
+  //             "Password and Confirm Password does not match"
+  //           );
+  //         }
+  //       } else {
+  //         return thrownErrorMessage(res, 400, strongPassword(password));
+  //       }
+  //     } else {
+  //       return thrownErrorMessage(res, 500, "token is Expired");
+  //     }
+  //   } else {
+  //     return thrownErrorMessage(res, 404, "User not found. Invalid Link");
+  //   }
+  // } else {
+  //   return thrownErrorMessage(res, 400, "Invalid Link");
+  // }
 };

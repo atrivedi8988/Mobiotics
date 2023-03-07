@@ -12,7 +12,8 @@ function AllRoutes() {
   return (
     <Routes>
       <Route path="/" element={<HomePage />} />
-      <Route path="/signup" element={<Signup />} />
+      {/* <Route path="/signup" element={<Signup />} />
+      <Route path="/login" element={<Login />} /> */}
       <Route
         path="/profile"
         element={
@@ -21,8 +22,15 @@ function AllRoutes() {
           </PrivateRoute>
         }
       />
-      <Route path="/userlist" element={<UserList/>}/>
-      <Route path="/reset/:id/:token" element={<ResetPassword/>} />
+      <Route
+        path="/userlist"
+        element={
+          <PrivateRoute>
+            <UserList />
+          </PrivateRoute>
+        }
+      />
+      <Route path="/reset/:id/:token" element={<ResetPassword />} />
     </Routes>
   );
 }

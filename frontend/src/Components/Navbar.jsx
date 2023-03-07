@@ -27,12 +27,13 @@ function Navbar() {
         <Heading color={"orange.200"}>ℳ𝒪ℬℐ𝒪𝒯ℐ𝒞𝒮</Heading>
       </Link>
       <Link to={"/profile"}>Profile</Link>
+      <Link to="/userlist">User List</Link>
       {
         <Text _hover={{ cursor: "pointer" }} onClick={logoutHandler}>
           Logout
         </Text>
       }
-      <Link to="/userlist">User List</Link>
+      
     </HStack>
   );
 }

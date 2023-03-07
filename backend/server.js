@@ -1,6 +1,7 @@
 const cors = require("cors");
 const express = require("express");
 const connectDatabase = require("./config/dbconnect");
+const { sendEmail } = require("./Middlewares/sendEmail");
 const app = express();
 
 app.use(express.json());
@@ -18,7 +19,7 @@ const userRoute = require("./Route/user.route")
 app.use("/api/user",userRoute)
 
 
-
+// app.use(sendEmail)
 
 
 // connecting to the mongodb server
