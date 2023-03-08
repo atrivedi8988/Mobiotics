@@ -65,7 +65,7 @@ function Profile() {
             <Button variant="solid" colorScheme="blue">
               <EditModal isOpen={isOpen} onOpen={onOpen} onClose={onClose} />
             </Button>
-            <Button onClick={handleDelete} variant="solid" colorScheme="red">
+            <Button onClick={()=>handleDelete(userInfo._id)} variant="solid" colorScheme="red">
               Delete Account
             </Button>
           </ButtonGroup>

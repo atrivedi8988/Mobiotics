@@ -177,7 +177,7 @@ function EditModal({ isOpen, onOpen, onClose }) {
               colorScheme="blue"
               width="100%"
               style={{ marginTop: 15 }}
-              onClick={()=>handleEdit(userInfo.id)}
+              onClick={()=>handleEdit(userInfo._id)}
               //   isLoading={picLoading}
             >
               UPDATE
