@@ -1,32 +1,93 @@
-import { Box, Button, Heading, Input } from "@chakra-ui/react";
+import {
+  VStack,
+  Input,
+  InputGroup,
+  InputRightElement,
+  FormControl,
+  FormLabel,
+  Button,
+  Heading,
+} from "@chakra-ui/react";
 import axios from "axios";
 import React, { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 function ResetPassword() {
-  const [pass, setPass] = useState(null);
+  const navigate = useNavigate()
+  const [show, setShow] = useState(false);
+  const handleClick = () => setShow(!show);
   const { id, token } = useParams();
-  const handleReset = () => {
-    // if (pass) {
-      axios
-        .patch(`http://localhost:8080/reset/${id}/${token}`, { password: pass })
-        .then((res) => {
-          console.log(res);
-        });
-    // }else{
-    //     alert("you didn't fill the password")
-    // }
+  const [formstate, setFormState] = useState({
+    password: "",
+    confirmPassword: ""
+  });
+  const handleChange = (e) => {
+    const { name, value, files } = e.target;
+    setFormState({
+      ...formstate,
+      [name]: value || files[0],
+    });
   };
+  const submitHandler = async () => {
+    try {
+      let res = await axios.patch(
+        `http://localhost:8080/api/user/reset/${id}/${token}`,
+        formstate
+      );
+      alert(res.data.message);
+      if(res.data.success){
+        navigate("/")
+      }
+    } catch (error) {
+      alert(error.response.data.message);
+    }
+  };
+ 
   return (
-    <Box>
+    <VStack width={"40%"} margin="auto" mt={"30px"}>
       <Heading>Reset Your Password</Heading>
-      <Input
-        type={"text"}
-        placeholder={"Type your new password"}
-        onChange={(e) => setPass(e.target.value)}
-      />
-      <Button onClick={handleReset}>Submit</Button>
-    </Box>
+      <FormControl id="password" isRequired>
+        <FormLabel>Password</FormLabel>
+        <InputGroup size="md">
+          <Input
+            type={show ? "text" : "password"}
+            placeholder="Enter Password"
+            name="password"
+            onChange={handleChange}
+          />
+          <InputRightElement width="4.5rem">
+            <Button h="1.75rem" size="sm" onClick={handleClick}>
+              {show ? "Hide" : "Show"}
+            </Button>
+          </InputRightElement>
+        </InputGroup>
+      </FormControl>
+      <FormControl id="confirmPassword" isRequired>
+        <FormLabel>Confirm Password</FormLabel>
+        <InputGroup size="md">
+          <Input
+            type={show ? "text" : "password"}
+            placeholder="Confirm password"
+            name="confirmPassword"
+            onChange={handleChange}
+          />
+          <InputRightElement width="4.5rem">
+            <Button h="1.75rem" size="sm" onClick={handleClick}>
+              {show ? "Hide" : "Show"}
+            </Button>
+          </InputRightElement>
+        </InputGroup>
+      </FormControl>
+      <Button
+        colorScheme="blue"
+        width="100%"
+        style={{ marginTop: 15 }}
+        onClick={submitHandler}
+        //   isLoading={picLoading}
+      >
+        Sign Up
+      </Button>
+    </VStack>
   );
 }
 

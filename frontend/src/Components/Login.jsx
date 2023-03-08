@@ -44,12 +44,15 @@ function Login() {
     }
   };
 
-  const handleForgotPassword = () => {
-    axios
-      .post("http://localhost:8080/api/user/forgot", { email: formstate.email })
-      .then((res) => {
-        console.log(res);
+  const handleForgotPassword = async () => {
+    try {
+      let res = await axios.post("http://localhost:8080/api/user/forgot", {
+        email: formstate.email,
       });
+      alert(res.data.message)
+    } catch (error) {
+      alert(error.response.data.message);
+    }
   };
   return (
     <>

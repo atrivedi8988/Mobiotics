@@ -28,13 +28,14 @@ exports.isAuthenticate = async (req, res, next) => {
 };
 
 exports.isAuthorize = async (req, res, next) => {
+  if (req.user.role === "admin") {
+    next();
+  }
   if (req.user.role === "user") {
     res.status(400).json({
       success: false,
       message: "Only accessed by a admin and you are not admin",
     });
   }
-  if (req.user.role === "admin") {
-    next();
-  }
+ 
 };

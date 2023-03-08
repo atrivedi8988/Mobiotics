@@ -96,6 +96,7 @@ exports.makeAdmin = async (req, res) => {
   // user.save({ validateBeforeSave: false });
   res.status(200).json({
     success: true,
+    message : "successfully assigned",
     user,
   });
 };
@@ -163,6 +164,10 @@ exports.resetPassword = async (req, res) => {
         400,
         "Reset Password token is invalid or has been expired"
       );
+    }
+
+    if(password==user.password){
+      return thrownErrorMessage(res,400,"New and old password same")
     }
   
     if (password !== confirmPassword) {
