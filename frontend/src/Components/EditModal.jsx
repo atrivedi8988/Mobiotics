@@ -36,6 +36,13 @@ function EditModal({ isOpen, onOpen, onClose }) {
     confirmPassword: "",
     pic: "",
   });
+  const handleUserProfile = ()=>{
+    axios
+    .get("https://mobiotics.up.railway.app/api/user/profile")
+    .then((res) => {
+      setUserInfo(res.data);
+    });
+  }
   const handleChange = (e) => {
     const { name, value, files } = e.target;
     setUserInfo({
@@ -44,33 +51,22 @@ function EditModal({ isOpen, onOpen, onClose }) {
     });
   };
 
-  const submitHandler = async () => {
+  const handleEdit = async(id) => {
     try {
       let res = await axios.put(
-        "https://mobiotics.up.railway.app/api/user/create",
+        `https://mobiotics.up.railway.app/api/user/update/${id}`,
         userInfo
       );
-      localStorage.setItem("token", res.data.token);
-      axios.defaults.headers.common[
-        "Authorization"
-      ] = `Bearer ${localStorage.getItem("token")}`;
       alert(res.data.message);
       navigate("/profile");
+      handleUserProfile()
     } catch (error) {
       alert(error.response.data.message);
     }
   };
 
-  const handleEdit = () => {
-    console.log("click");
-  };
-
   useEffect(() => {
-    axios
-      .get("https://mobiotics.up.railway.app/api/user/profile")
-      .then((res) => {
-        setUserInfo(res.data);
-      });
+   handleUserProfile()
   }, []);
 
   console.log(userInfo);
@@ -181,7 +177,7 @@ function EditModal({ isOpen, onOpen, onClose }) {
               colorScheme="blue"
               width="100%"
               style={{ marginTop: 15 }}
-              onClick={submitHandler}
+              onClick={()=>handleEdit(userInfo.id)}
               //   isLoading={picLoading}
             >
               UPDATE

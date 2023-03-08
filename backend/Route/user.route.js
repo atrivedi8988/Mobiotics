@@ -25,7 +25,7 @@ router.post("/login", loggedInUser);
 router.get("/profile", isAuthenticate, getProfileAuthenticateUser);
 
 // Update Profile and Delete Profile
-router.route("/update/:id").patch(isAuthenticate, updateProfile)
+router.route("/update/:id").put(isAuthenticate, updateProfile)
 router.route("/delete/:id").delete(isAuthenticate, deleteProfile)
 
 // Delete user By ---Admin 

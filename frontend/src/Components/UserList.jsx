@@ -48,10 +48,18 @@ function UserList() {
     }
   };
 
-  
-  const handleDelete = ()=>{
+  const handleDelete = async (id) => {
+    try {
+      let res = await axios.delete(
+        `https://mobiotics.up.railway.app/api/user/admin/delete/${id}`
+      );
+      alert(res.data.message);
+      handleAllUsers()
+    } catch (error) {
+      alert(error.response.data.message);
+    }
+  };
 
-  }
 
   useEffect(() => {
     handleAllUsers();
@@ -68,7 +76,7 @@ function UserList() {
             <Th>Name</Th>
             <Th>Email</Th>
             <Th>Role</Th>
-            <Th>Edit</Th>
+            {/* <Th>Edit</Th> */}
             <Th>Delete</Th>
           </Tr>
         </Thead>
@@ -88,15 +96,15 @@ function UserList() {
                 >
                   {el.role}
                 </Td>
-                <Td
+                {/* <Td
                   _hover={{ cursor: "pointer" }}
                   
                 >
                   <EditModal isOpen={isOpen} onOpen={onOpen} onClose={onClose} />
-                </Td>
+                </Td> */}
                 <Td
                   _hover={{ cursor: "pointer" }}
-                  onClick={() => handleDelete(el._id, el.role)}
+                  onClick={() => handleDelete(el._id)}
                 >
                   <DeleteIcon />
                 </Td>
