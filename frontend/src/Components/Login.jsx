@@ -30,7 +30,7 @@ function Login() {
   const submitHandler = async () => {
     try {
       let res = await axios.post(
-        "/api/user/login",
+        "https://mobiotics-backend-production.up.railway.app/api/user/login",
         formstate
       );
       localStorage.setItem("token", res.data.token);
@@ -46,7 +46,7 @@ function Login() {
 
   const handleForgotPassword = async () => {
     try {
-      let res = await axios.post("/api/user/forgot", {
+      let res = await axios.post("https://mobiotics-backend-production.up.railway.app/api/user/forgot", {
         email: formstate.email,
       });
       alert(res.data.message)
