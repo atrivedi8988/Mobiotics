@@ -31,7 +31,7 @@ function ResetPassword() {
   const submitHandler = async () => {
     try {
       let res = await axios.patch(
-        `https://mobiotics-backend-production.up.railway.app/api/user/reset/${id}/${token}`,
+        `https://mobiotics.up.railway.app/api/user/reset/${id}/${token}`,
         formstate
       );
       alert(res.data.message);

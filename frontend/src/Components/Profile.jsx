@@ -25,7 +25,7 @@ function Profile() {
   }
 
   useEffect(() => {
-    axios.get("https://mobiotics-backend-production.up.railway.app/api/user/profile").then((res) => {
+    axios.get("https://mobiotics.up.railway.app/api/user/profile").then((res) => {
       setUserInfo(res.data);
     });
   }, []);

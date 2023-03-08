@@ -42,7 +42,7 @@ function EditModal({ isOpen, onOpen, onClose }) {
   const submitHandler = async () => {
     try {
       let res = await axios.post(
-        "https://mobiotics-backend-production.up.railway.app/api/user/create",
+        "https://mobiotics.up.railway.app/api/user/create",
         formstate
       );
       localStorage.setItem("token", res.data.token);
