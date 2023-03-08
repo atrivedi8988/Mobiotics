@@ -25,7 +25,7 @@ function Profile() {
   }
 
   useEffect(() => {
-    axios.get("http://localhost:8080/api/user/profile").then((res) => {
+    axios.get("/api/user/profile").then((res) => {
       setUserInfo(res.data);
     });
   }, []);

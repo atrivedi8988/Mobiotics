@@ -22,7 +22,7 @@ function UserList() {
 
   const handleAllUsers = async () => {
     try {
-      let res = await axios.get("http://localhost:8080/api/user/allusers");
+      let res = await axios.get("/api/user/allusers");
       if (res.data.success) {
         setUsers(res.data.user);
       }
@@ -36,7 +36,7 @@ function UserList() {
     const value = prompt;
     try {
       let res = await axios.patch(
-        `http://localhost:8080/api/user/assignadmin/${id}`,
+        `/api/user/assignadmin/${id}`,
         {
           role: value("Edit Your Role user to admin and admin to user") || role,
         }

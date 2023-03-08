@@ -32,7 +32,7 @@ function Signup() {
   const submitHandler = async () => {
     try {
       let res = await axios.post(
-        "http://localhost:8080/api/user/create",
+        "/api/user/create",
         formstate
       );
       localStorage.setItem("token", res.data.token);

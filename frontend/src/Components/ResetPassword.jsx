@@ -31,7 +31,7 @@ function ResetPassword() {
   const submitHandler = async () => {
     try {
       let res = await axios.patch(
-        `http://localhost:8080/api/user/reset/${id}/${token}`,
+        `/api/user/reset/${id}/${token}`,
         formstate
       );
       alert(res.data.message);

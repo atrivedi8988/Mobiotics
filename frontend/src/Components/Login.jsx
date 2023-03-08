@@ -30,7 +30,7 @@ function Login() {
   const submitHandler = async () => {
     try {
       let res = await axios.post(
-        "http://localhost:8080/api/user/login",
+        "/api/user/login",
         formstate
       );
       localStorage.setItem("token", res.data.token);
@@ -46,7 +46,7 @@ function Login() {
 
   const handleForgotPassword = async () => {
     try {
-      let res = await axios.post("http://localhost:8080/api/user/forgot", {
+      let res = await axios.post("/api/user/forgot", {
         email: formstate.email,
       });
       alert(res.data.message)
