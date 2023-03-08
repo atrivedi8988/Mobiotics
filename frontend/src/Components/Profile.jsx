@@ -56,7 +56,7 @@ function Profile() {
             <EditModal isOpen={isOpen} onOpen={onOpen} onClose={onClose} />
             </Button>
             <Button variant="solid" colorScheme="red">
-              Delete
+              Delete Account
             </Button>
           </ButtonGroup>
         </CardFooter>

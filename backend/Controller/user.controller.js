@@ -74,6 +74,64 @@ exports.getProfileAuthenticateUser = async (req, res) => {
   res.status(200).send(req.user);
 };
 
+// Update Profile By User
+
+exports.updateProfile = async (req, res) => {
+  const { id } = req.params;
+  try {
+    let user = await User.findById(id);
+    if (!user) {
+      return thrownErrorMessage(res, 404, "User not found");
+    }
+    user = await User.findByIdAndUpdate(id, req.body);
+    res.status(200).json({
+      success: true,
+      message: "Account Updated Succesfully",
+    });
+  } catch (error) {
+    return thrownErrorMessage(res, 500, error.message);
+  }
+};
+
+// Delete Profile By User
+
+exports.deleteProfile = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const user = await User.findById(id);
+    if (!user) {
+      return thrownErrorMessage(res, 404, "User not found");
+    }
+    await user.remove();
+    res.status(200).json({
+      success: true,
+      message: "Account Deleted Succesfully",
+    });
+  } catch (error) {
+    return thrownErrorMessage(res, 500, error.message);
+  }
+};
+
+// Delete Profile User By ----Admin
+
+exports.deleteUserByAdmin = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const user = await User.findById(id);
+    if (!user) {
+      return thrownErrorMessage(res, 404, "User not found");
+    }
+    await user.remove();
+    res.status(200).json({
+      success: true,
+      message: "Account Deleted Succesfully",
+    });
+  } catch (error) {
+    return thrownErrorMessage(res, 500, error.message);
+  }
+};
+
+
 // Get All User --- Admin authorize
 
 exports.getAllUserByAdmin = async (req, res) => {
@@ -96,7 +154,7 @@ exports.makeAdmin = async (req, res) => {
   // user.save({ validateBeforeSave: false });
   res.status(200).json({
     success: true,
-    message : "successfully assigned",
+    message: "successfully assigned",
     user,
   });
 };
@@ -153,7 +211,7 @@ exports.resetPassword = async (req, res) => {
   try {
     const { id, token } = req.params;
     const { password, confirmPassword } = req.body;
-  
+
     const user = await User.findOne({
       resetPasswordToken: token,
       resetPasswordTokenExpiry: { $gt: Date.now() },
@@ -166,10 +224,10 @@ exports.resetPassword = async (req, res) => {
       );
     }
 
-    if(password==user.password){
-      return thrownErrorMessage(res,400,"New and old password same")
+    if (password == user.password) {
+      return thrownErrorMessage(res, 400, "New and old password same");
     }
-  
+
     if (password !== confirmPassword) {
       return thrownErrorMessage(res, 400, "Password does not match");
     }
@@ -178,9 +236,9 @@ exports.resetPassword = async (req, res) => {
       user.password = req.body.password;
       user.resetPasswordToken = undefined;
       user.resetPasswordExpire = undefined;
-  
+
       await user.save();
-  
+
       res.status(200).json({
         success: true,
         message: "Password chaged successfully",
@@ -188,11 +246,10 @@ exports.resetPassword = async (req, res) => {
     } else {
       return thrownErrorMessage(res, 400, strongPassword(password));
     }
-  
   } catch (error) {
-    return thrownErrorMessage(res,500,error.message)
+    return thrownErrorMessage(res, 500, error.message);
   }
- 
+
   // sendToken(user, 200, res);
 
   // if (token && id) {

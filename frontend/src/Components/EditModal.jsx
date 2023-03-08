@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Modal,
   ModalOverlay,
@@ -16,14 +16,18 @@ import {
   InputRightElement,
   FormControl,
   FormLabel,
+  Editable,
+  EditableInput,
+  EditableTextarea,
+  EditablePreview,
 } from "@chakra-ui/react";
 import axios from "axios";
-import { EditIcon, DeleteIcon } from "@chakra-ui/icons";
 import { useNavigate } from "react-router-dom";
 
 function EditModal({ isOpen, onOpen, onClose }) {
   const [show, setShow] = useState(false);
   const handleClick = () => setShow(!show);
+  const [userInfo, setUserInfo] = useState({});
   const navigate = useNavigate();
   const [formstate, setFormState] = useState({
     name: "",
@@ -34,16 +38,17 @@ function EditModal({ isOpen, onOpen, onClose }) {
   });
   const handleChange = (e) => {
     const { name, value, files } = e.target;
-    setFormState({
-      ...formstate,
-      [name]: value || files[0],
+    setUserInfo({
+      ...userInfo,
+      [name]: value,
     });
   };
+
   const submitHandler = async () => {
     try {
-      let res = await axios.post(
+      let res = await axios.put(
         "https://mobiotics.up.railway.app/api/user/create",
-        formstate
+        userInfo
       );
       localStorage.setItem("token", res.data.token);
       axios.defaults.headers.common[
@@ -60,11 +65,20 @@ function EditModal({ isOpen, onOpen, onClose }) {
     console.log("click");
   };
 
+  useEffect(() => {
+    axios
+      .get("https://mobiotics.up.railway.app/api/user/profile")
+      .then((res) => {
+        setUserInfo(res.data);
+      });
+  }, []);
+
+  console.log(userInfo);
+  // console.log(formstate.name);
+
   return (
     <>
-      <Box onClick={onOpen}>
-        Edit Profile
-      </Box>
+      <Box onClick={onOpen}>Edit Profile</Box>
 
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
@@ -75,53 +89,80 @@ function EditModal({ isOpen, onOpen, onClose }) {
             <VStack spacing="5px">
               <FormControl id="first-name" isRequired>
                 <FormLabel>Name</FormLabel>
-                <Input
-                  placeholder="Enter Your Name"
-                  name="name"
-                  onChange={handleChange}
-                />
+                <Editable defaultValue={userInfo.name}>
+                  <EditablePreview
+                    width={"100%"}
+                    border={"1px solid blue"}
+                    borderRadius={"10px"}
+                    pl={"20px"}
+                  />
+                  <EditableInput
+                    type={"text"}
+                    name="name"
+                    onChange={handleChange}
+                    border={"1px solid blue"}
+                    borderRadius={"10px"}
+                    pl={"20px"}
+                  />
+                </Editable>
               </FormControl>
               <FormControl id="email" isRequired>
                 <FormLabel>Email Address</FormLabel>
-                <Input
-                  type="email"
-                  placeholder="Enter Your Email Address"
-                  name="email"
-                  onChange={handleChange}
-                />
+                <Editable defaultValue={userInfo.email}>
+                  <EditablePreview
+                    width={"100%"}
+                    border={"1px solid blue"}
+                    borderRadius={"10px"}
+                    pl={"20px"}
+                  />
+                  <EditableInput
+                    type={"email"}
+                    name="email"
+                    onChange={handleChange}
+                    border={"1px solid blue"}
+                    borderRadius={"10px"}
+                    pl={"20px"}
+                  />
+                </Editable>
               </FormControl>
-              <FormControl id="password" isRequired>
+              {/* <FormControl id="password" isRequired>
                 <FormLabel>Password</FormLabel>
-                <InputGroup size="md">
-                  <Input
-                    type={show ? "text" : "password"}
-                    placeholder="Enter Password"
+                <Editable defaultValue={"password"}>
+                  <EditablePreview
+                    width={"100%"}
+                    border={"1px solid blue"}
+                    borderRadius={"10px"}
+                    pl={"20px"}
+                  />
+                  <EditableInput
+                    type={"text"}
                     name="password"
                     onChange={handleChange}
+                    border={"1px solid blue"}
+                    borderRadius={"10px"}
+                    pl={"20px"}
                   />
-                  <InputRightElement width="4.5rem">
-                    <Button h="1.75rem" size="sm" onClick={handleClick}>
-                      {show ? "Hide" : "Show"}
-                    </Button>
-                  </InputRightElement>
-                </InputGroup>
+                </Editable>
               </FormControl>
               <FormControl id="confirmPassword" isRequired>
                 <FormLabel>Confirm Password</FormLabel>
-                <InputGroup size="md">
-                  <Input
-                    type={show ? "text" : "password"}
-                    placeholder="Confirm password"
-                    name="confirmPassword"
-                    onChange={handleChange}
+                <Editable defaultValue={"password"}>
+                  <EditablePreview
+                    width={"100%"}
+                    border={"1px solid blue"}
+                    borderRadius={"10px"}
+                    pl={"20px"}
                   />
-                  <InputRightElement width="4.5rem">
-                    <Button h="1.75rem" size="sm" onClick={handleClick}>
-                      {show ? "Hide" : "Show"}
-                    </Button>
-                  </InputRightElement>
-                </InputGroup>
-              </FormControl>
+                  <EditableInput
+                    type={"text"}
+                    name="password"
+                    onChange={handleChange}
+                    border={"1px solid blue"}
+                    borderRadius={"10px"}
+                    pl={"20px"}
+                  />
+                </Editable>
+              </FormControl> */}
               <FormControl id="pic">
                 <FormLabel>Upload your Picture</FormLabel>
                 <Input
@@ -143,7 +184,7 @@ function EditModal({ isOpen, onOpen, onClose }) {
               onClick={submitHandler}
               //   isLoading={picLoading}
             >
-              Submit
+              UPDATE
             </Button>
           </ModalFooter>
         </ModalContent>

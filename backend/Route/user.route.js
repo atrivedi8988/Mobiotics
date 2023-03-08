@@ -8,6 +8,9 @@ const {
   makeAdmin,
   forgotPassword,
   resetPassword,
+  updateProfile,
+  deleteProfile,
+  deleteUserByAdmin,
 } = require("../Controller/user.controller");
 
 const router = express.Router();
@@ -21,11 +24,18 @@ router.post("/login", loggedInUser);
 // Get Profile Authenticate User
 router.get("/profile", isAuthenticate, getProfileAuthenticateUser);
 
+// Update Profile and Delete Profile
+router.route("/update/:id").patch(isAuthenticate, updateProfile)
+router.route("/delete/:id").delete(isAuthenticate, deleteProfile)
+
+// Delete user By ---Admin 
+router.delete("/admin/delete/:id",isAuthenticate,isAuthorize,deleteUserByAdmin)
+
 // Get All User --- Admin authorize
-router.get("/allusers", isAuthenticate, isAuthorize, getAllUserByAdmin);
+router.get("/admin/allusers", isAuthenticate, isAuthorize, getAllUserByAdmin);
 
 // change user to admin and make a admin
-router.patch("/assignadmin/:id", isAuthenticate, isAuthorize, makeAdmin);
+router.patch("/admin/assignadmin/:id", isAuthenticate, isAuthorize, makeAdmin);
 
 // forgot password
 router.post("/forgot", forgotPassword);
