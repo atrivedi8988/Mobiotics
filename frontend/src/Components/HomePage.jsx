@@ -8,6 +8,7 @@ import {
   TabPanels,
   Tabs,
   Text,
+  useToast,
 } from "@chakra-ui/react";
 import Login from "./Login";
 import Signup from "./Signup";
@@ -16,13 +17,20 @@ import { useNavigate } from "react-router-dom";
 
 function HomePage() {
   const navigate = useNavigate();
+  const toast = useToast()
   // console.log(axios.defaults.headers.common["Authorization"].split(" ")[1]==="");
   // console.log(axios.defaults.headers.common["Authorization"].split(" ")[1]);
   
   useEffect(() => {
     if (axios.defaults.headers.common["Authorization"].split(" ")[1]!=="null") {
       // console.log("/profile")
-      alert("Please logout first");
+      // alert("Please logout first");
+      toast({
+        title: "Please logout first",
+        status: 'error',
+        duration: 2000,
+        isClosable: true,
+      })
       navigate("/profile");
     }
   }, []);

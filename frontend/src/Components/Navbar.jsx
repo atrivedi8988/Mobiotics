@@ -1,9 +1,10 @@
-import { Box, Heading, HStack, Text } from "@chakra-ui/react";
+import { Box, Heading, HStack, Text, useToast } from "@chakra-ui/react";
 import axios from "axios";
 import React, { useState } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 
 function Navbar() {
+  const toast = useToast()
   // const [logout, setLogout] = useState(true);
   const navigate = useNavigate();
   const logoutHandler = () => {
@@ -11,6 +12,12 @@ function Navbar() {
     axios.defaults.headers.common["Authorization"] = `Bearer null`;
     navigate("/");
     // setLogout(!logout);
+    toast({
+      title:"Logout Successfully",
+      status: 'success',
+      duration: 2000,
+      isClosable: true,
+    })
   };
   return (
     <HStack

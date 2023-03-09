@@ -9,6 +9,7 @@ import {
   Thead,
   Tr,
   useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
@@ -17,6 +18,7 @@ import { EditIcon, DeleteIcon } from "@chakra-ui/icons";
 import EditModal from "./EditModal";
 
 function UserList() {
+  const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
@@ -30,24 +32,42 @@ function UserList() {
         setUsers(res.data.user);
       }
     } catch (error) {
-      alert(`${error.response.data.message}`);
+      // alert(`${error.response.data.message}`);
+      toast({
+        title: error.response.data.message,
+        status: "error",
+        duration: 2000,
+        isClosable: true,
+      });
       navigate("/profile");
     }
   };
 
   const handleRole = async (id, role) => {
-    const value = role==="admin"?"user":"admin"
+    const value = role === "admin" ? "user" : "admin";
     try {
       let res = await axios.patch(
         `https://mobiotics.up.railway.app/api/user/admin/assignadmin/${id}`,
         {
-          role: value
+          role: value,
         }
       );
-      alert(res.data.message);
+      // alert(res.data.message);
+      toast({
+        title: res.data.message,
+        status: "success",
+        duration: 2000,
+        isClosable: true,
+      });
       handleAllUsers();
     } catch (error) {
-      alert(error.response.data.message);
+      // alert(error.response.data.message);
+      toast({
+        title: error.response.data.message,
+        status: "error",
+        duration: 2000,
+        isClosable: true,
+      });
     }
   };
 
@@ -56,10 +76,22 @@ function UserList() {
       let res = await axios.delete(
         `https://mobiotics.up.railway.app/api/user/admin/delete/${id}`
       );
-      alert(res.data.message);
+      // alert(res.data.message);
+      toast({
+        title: res.data.message,
+        status: "success",
+        duration: 2000,
+        isClosable: true,
+      });
       handleAllUsers();
     } catch (error) {
-      alert(error.response.data.message);
+      // alert(error.response.data.message);
+      toast({
+        title: error.response.data.message,
+        status: "error",
+        duration: 2000,
+        isClosable: true,
+      });
     }
   };
 
@@ -95,7 +127,11 @@ function UserList() {
                 <Td>{el.email}</Td>
                 <Td>{el.role}</Td>
                 <Td _hover={{ cursor: "pointer" }}>
-                  <Button width={"80px"} bgColor={"teal.100"} onClick={() => handleRole(el._id, el.role)}>
+                  <Button
+                    width={"80px"}
+                    bgColor={"teal.100"}
+                    onClick={() => handleRole(el._id, el.role)}
+                  >
                     {el.role === "admin" ? "User" : "Admin"}
                   </Button>
                 </Td>

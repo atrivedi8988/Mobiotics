@@ -6,12 +6,14 @@ import {
   FormControl,
   FormLabel,
   Button,
+  useToast,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 function Signup() {
+  const toast = useToast()
   const [show, setShow] = useState(false);
   const handleClick = () => setShow(!show);
   const [loading, setLoading] = useState(false);
@@ -21,7 +23,7 @@ function Signup() {
     email: "",
     password: "",
     confirmPassword: "",
-    pic : ""
+    pic : undefined
   });
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -41,11 +43,23 @@ function Signup() {
       axios.defaults.headers.common[
         "Authorization"
       ] = `Bearer ${localStorage.getItem("token")}`;
-      alert(res.data.message);
+      // alert(res.data.message);
+      toast({
+        title: res.data.message,
+        status: 'success',
+        duration: 2000,
+        isClosable: true,
+      })
       navigate("/profile");
       setLoading(false);
     } catch (error) {
-      alert(error.response.data.message);
+      // alert(error.response.data.message);
+      toast({
+        title: error.response.data.message,
+        status: 'error',
+        duration: 2000,
+        isClosable: true,
+      })
       setLoading(false);
     }
     console.log(formstate)
@@ -54,7 +68,13 @@ function Signup() {
   const postImage = (pics) => {
     setLoading(true);
     if (pics === undefined) {
-      alert("Please select Image");
+      // alert("Please select Image");
+      toast({
+        title: "Please select Image",
+        status: 'error',
+        duration: 2000,
+        isClosable: true,
+      })
       setLoading(false);
       return;
     }
@@ -85,7 +105,13 @@ function Signup() {
           setLoading(false);
         });
     } else {
-      alert("Please select Image");
+      // alert("Please select Image");
+      toast({
+        title: "Please select Image",
+        status: 'error',
+        duration: 2000,
+        isClosable: true,
+      })
       setLoading(false);
       return;
     }

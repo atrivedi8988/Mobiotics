@@ -7,12 +7,14 @@ import {
   FormLabel,
   Button,
   Heading,
+  useToast,
 } from "@chakra-ui/react";
 import axios from "axios";
 import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 function ResetPassword() {
+  const toast = useToast()
   const navigate = useNavigate()
   const [show, setShow] = useState(false);
   const handleClick = () => setShow(!show);
@@ -34,12 +36,24 @@ function ResetPassword() {
         `https://mobiotics.up.railway.app/api/user/reset/${id}/${token}`,
         formstate
       );
-      alert(res.data.message);
+      // alert(res.data.message);
+      toast({
+        title: res.data.message,
+        status: 'success',
+        duration: 2000,
+        isClosable: true,
+      })
       if(res.data.success){
         navigate("/")
       }
     } catch (error) {
-      alert(error.response.data.message);
+      // alert(error.response.data.message);
+      toast({
+        title: error.response.data.message,
+        status: 'error',
+        duration: 2000,
+        isClosable: true,
+      })
     }
   };
  

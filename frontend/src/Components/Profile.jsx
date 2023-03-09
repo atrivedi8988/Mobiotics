@@ -1,18 +1,15 @@
 import React, { useEffect, useState } from "react";
 import {
   Card,
-  CardHeader,
   CardBody,
   CardFooter,
   Text,
-  Heading,
   Stack,
   Divider,
   Image,
   ButtonGroup,
   Button,
   useDisclosure,
-  Box,
 } from "@chakra-ui/react";
 import axios from "axios";
 import EditModal from "./EditModal";

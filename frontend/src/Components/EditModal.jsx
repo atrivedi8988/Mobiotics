@@ -20,11 +20,13 @@ import {
   EditableInput,
   EditableTextarea,
   EditablePreview,
+  useToast,
 } from "@chakra-ui/react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 function EditModal({ isOpen, onOpen, onClose }) {
+  const toast = useToast()
   const [show, setShow] = useState(false);
   const handleClick = () => setShow(!show);
   // const [update ,setUpdate] = useState(false)
@@ -57,21 +59,41 @@ function EditModal({ isOpen, onOpen, onClose }) {
     axios
       .put(`https://mobiotics.up.railway.app/api/user/update/${id}`, userInfo)
       .then((res) => {
-        alert(res.data.message);
+        // alert(res.data.message);
+        toast({
+          title: res.data.message,
+          status: 'success',
+          duration: 2000,
+          isClosable: true,
+        })
         onClose();
       })
       .then(() => {
         handleUserProfile();
-        window.location.reload()
+        window.location.reload();
         // setUpdate(!update)
       })
-      .catch((error) => alert(error.response.data.message));
+      .catch((error) => {
+        // alert(error.response.data.message);
+        toast({
+          title: error.response.data.message,
+          status: 'error',
+          duration: 2000,
+          isClosable: true,
+        })
+      });
   };
 
   const postImage = (pics) => {
     setLoading(true);
     if (pics === undefined) {
-      alert("Please select Image");
+      // alert("Please select Image");
+      toast({
+        title:"Please select Image",
+        status: 'error',
+        duration: 2000,
+        isClosable: true,
+      })
       setLoading(false);
       return;
     }
@@ -99,7 +121,13 @@ function EditModal({ isOpen, onOpen, onClose }) {
           setLoading(false);
         });
     } else {
-      alert("Please select Image");
+      // alert("Please select Image");
+      toast({
+        title:"Please select Image",
+        status: 'error',
+        duration: 2000,
+        isClosable: true,
+      })
       setLoading(false);
       return;
     }

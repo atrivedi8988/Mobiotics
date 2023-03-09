@@ -7,12 +7,14 @@ import {
   FormLabel,
   Button,
   Text,
+  useToast,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 function Login() {
+  const toast = useToast()
   const [show, setShow] = useState(false);
   const handleClick = () => setShow(!show);
   const navigate = useNavigate();
@@ -37,10 +39,22 @@ function Login() {
       axios.defaults.headers.common[
         "Authorization"
       ] = `Bearer ${localStorage.getItem("token")}`;
-      alert(res.data.message);
+      // alert(res.data.message);
+      toast({
+        title: res.data.message,
+        status: 'success',
+        duration: 2000,
+        isClosable: true,
+      })
       navigate("/profile");
     } catch (error) {
-      alert(error.response.data.message);
+      // alert(error.response.data.message);
+      toast({
+        title: error.response.data.message,
+        status: 'error',
+        duration: 2000,
+        isClosable: true,
+      })
     }
   };
 
@@ -49,9 +63,21 @@ function Login() {
       let res = await axios.post("https://mobiotics.up.railway.app/api/user/forgot", {
         email: formstate.email,
       });
-      alert(res.data.message)
+      // alert(res.data.message)
+      toast({
+        title: res.data.message,
+        status: 'success',
+        duration: 2000,
+        isClosable: true,
+      })
     } catch (error) {
-      alert(error.response.data.message);
+      // alert(error.response.data.message);
+      toast({
+        title: error.response.data.message,
+        status: 'error',
+        duration: 2000,
+        isClosable: true,
+      })
     }
   };
   return (
