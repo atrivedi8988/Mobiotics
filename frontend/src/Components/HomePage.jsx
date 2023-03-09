@@ -22,7 +22,7 @@ function HomePage() {
   useEffect(() => {
     if (axios.defaults.headers.common["Authorization"].split(" ")[1]!=="null") {
       // console.log("/profile")
-      alert("first logged out");
+      alert("Please logout first");
       navigate("/profile");
     }
   }, []);

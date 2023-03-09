@@ -1,4 +1,5 @@
 import {
+  Button,
   Image,
   Input,
   Table,
@@ -16,13 +17,15 @@ import { EditIcon, DeleteIcon } from "@chakra-ui/icons";
 import EditModal from "./EditModal";
 
 function UserList() {
-  const { isOpen, onOpen, onClose } = useDisclosure()
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
 
   const handleAllUsers = async () => {
     try {
-      let res = await axios.get("https://mobiotics.up.railway.app/api/user/admin/allusers");
+      let res = await axios.get(
+        "https://mobiotics.up.railway.app/api/user/admin/allusers"
+      );
       if (res.data.success) {
         setUsers(res.data.user);
       }
@@ -33,12 +36,12 @@ function UserList() {
   };
 
   const handleRole = async (id, role) => {
-    const value = prompt;
+    const value = role==="admin"?"user":"admin"
     try {
       let res = await axios.patch(
         `https://mobiotics.up.railway.app/api/user/admin/assignadmin/${id}`,
         {
-          role: value("Edit Your Role user to admin and admin to user") || role,
+          role: value
         }
       );
       alert(res.data.message);
@@ -54,12 +57,11 @@ function UserList() {
         `https://mobiotics.up.railway.app/api/user/admin/delete/${id}`
       );
       alert(res.data.message);
-      handleAllUsers()
+      handleAllUsers();
     } catch (error) {
       alert(error.response.data.message);
     }
   };
-
 
   useEffect(() => {
     handleAllUsers();
@@ -77,6 +79,7 @@ function UserList() {
             <Th>Email</Th>
             <Th>Role</Th>
             {/* <Th>Edit</Th> */}
+            <Th>Update role</Th>
             <Th>Delete</Th>
           </Tr>
         </Thead>
@@ -90,18 +93,12 @@ function UserList() {
                 </Td>
                 <Td>{el.name}</Td>
                 <Td>{el.email}</Td>
-                <Td
-                  _hover={{ cursor: "pointer" }}
-                  onClick={() => handleRole(el._id, el.role)}
-                >
-                  {el.role}
+                <Td>{el.role}</Td>
+                <Td _hover={{ cursor: "pointer" }}>
+                  <Button width={"80px"} bgColor={"teal.100"} onClick={() => handleRole(el._id, el.role)}>
+                    {el.role === "admin" ? "User" : "Admin"}
+                  </Button>
                 </Td>
-                {/* <Td
-                  _hover={{ cursor: "pointer" }}
-                  
-                >
-                  <EditModal isOpen={isOpen} onOpen={onOpen} onClose={onClose} />
-                </Td> */}
                 <Td
                   _hover={{ cursor: "pointer" }}
                   onClick={() => handleDelete(el._id)}

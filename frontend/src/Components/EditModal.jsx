@@ -27,6 +27,7 @@ import { useNavigate } from "react-router-dom";
 function EditModal({ isOpen, onOpen, onClose }) {
   const [show, setShow] = useState(false);
   const handleClick = () => setShow(!show);
+  // const [update ,setUpdate] = useState(false)
   const [loading, setLoading] = useState(false);
   const [userInfo, setUserInfo] = useState({});
   const navigate = useNavigate();
@@ -57,12 +58,12 @@ function EditModal({ isOpen, onOpen, onClose }) {
       .put(`https://mobiotics.up.railway.app/api/user/update/${id}`, userInfo)
       .then((res) => {
         alert(res.data.message);
-        navigate("/profile");
         onClose();
       })
       .then(() => {
         handleUserProfile();
         window.location.reload()
+        // setUpdate(!update)
       })
       .catch((error) => alert(error.response.data.message));
   };
@@ -107,6 +108,7 @@ function EditModal({ isOpen, onOpen, onClose }) {
   useEffect(() => {
     handleUserProfile();
   }, []);
+  // console.log(update)
 
   // console.log(userInfo);
   // console.log(formstate.name);
@@ -160,44 +162,6 @@ function EditModal({ isOpen, onOpen, onClose }) {
                   />
                 </Editable>
               </FormControl>
-              {/* <FormControl id="password" isRequired>
-                <FormLabel>Password</FormLabel>
-                <Editable defaultValue={"password"}>
-                  <EditablePreview
-                    width={"100%"}
-                    border={"1px solid blue"}
-                    borderRadius={"10px"}
-                    pl={"20px"}
-                  />
-                  <EditableInput
-                    type={"text"}
-                    name="password"
-                    onChange={handleChange}
-                    border={"1px solid blue"}
-                    borderRadius={"10px"}
-                    pl={"20px"}
-                  />
-                </Editable>
-              </FormControl>
-              <FormControl id="confirmPassword" isRequired>
-                <FormLabel>Confirm Password</FormLabel>
-                <Editable defaultValue={"password"}>
-                  <EditablePreview
-                    width={"100%"}
-                    border={"1px solid blue"}
-                    borderRadius={"10px"}
-                    pl={"20px"}
-                  />
-                  <EditableInput
-                    type={"text"}
-                    name="password"
-                    onChange={handleChange}
-                    border={"1px solid blue"}
-                    borderRadius={"10px"}
-                    pl={"20px"}
-                  />
-                </Editable>
-              </FormControl> */}
               <FormControl id="pic">
                 <FormLabel>Upload your Picture</FormLabel>
                 <Input

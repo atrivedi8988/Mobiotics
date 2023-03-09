@@ -49,15 +49,33 @@ function Profile() {
         <CardBody>
           <Image
             src={userInfo.pic}
-            alt="Green double couch with wooden legs"
+            alt={`Profile picture`}
             borderRadius="lg"
             margin={"auto"}
             height={"400px"}
           />
-          <Stack mt="6" spacing="3">
-            <Heading size="md">Name : {userInfo.name}</Heading>
-            <Text>Email id : {userInfo.email}</Text>
-            <Text>Role : {userInfo.role}</Text>
+          <Stack
+            display={"inline-block"}
+            margin="auto"
+            mt="6"
+            spacing="3"
+            fontWeight={"500"}
+            color={"orange"}
+            textAlign={"left"}
+            fontSize="xl"
+          >
+            <Text size="md">
+              <span style={{ color: "teal" }}>Name :</span> {userInfo.name}
+            </Text>
+            <Text>
+              {" "}
+              <span style={{ color: "teal" }}>Email id :</span>{" "}
+              {userInfo.email}
+            </Text>
+            <Text>
+              {" "}
+              <span style={{ color: "teal" }}>Role :</span> {userInfo.role}
+            </Text>
           </Stack>
         </CardBody>
         <Divider />
@@ -66,7 +84,11 @@ function Profile() {
             <Button variant="solid" colorScheme="blue">
               <EditModal isOpen={isOpen} onOpen={onOpen} onClose={onClose} />
             </Button>
-            <Button onClick={()=>handleDelete(userInfo._id)} variant="solid" colorScheme="red">
+            <Button
+              onClick={() => handleDelete(userInfo._id)}
+              variant="solid"
+              colorScheme="red"
+            >
               Delete Account
             </Button>
           </ButtonGroup>
