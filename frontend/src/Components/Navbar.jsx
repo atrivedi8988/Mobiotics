@@ -28,7 +28,7 @@ function Navbar() {
       </Link>
       <Link to={"/profile"}>Profile</Link>
       <Link to="/userlist">User List</Link>
-      {
+      {axios.defaults.headers.common["Authorization"].split(" ")[1]!=="null"&&
         <Text _hover={{ cursor: "pointer" }} onClick={logoutHandler}>
           Logout
         </Text>

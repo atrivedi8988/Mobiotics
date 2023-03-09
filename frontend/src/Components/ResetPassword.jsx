@@ -85,7 +85,7 @@ function ResetPassword() {
         onClick={submitHandler}
         //   isLoading={picLoading}
       >
-        Sign Up
+        Submit
       </Button>
     </VStack>
   );

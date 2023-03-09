@@ -11,7 +11,7 @@ const { sendEmail } = require("../Middlewares/sendEmail");
 
 exports.registerUser = async (req, res) => {
   try {
-    const { name, email, password, confirmPassword } = req.body;
+    const { name, email, password, confirmPassword,pic } = req.body;
     if (strongPassword(password) === true) {
       if (password === confirmPassword) {
         const user = await User.create({
@@ -19,6 +19,7 @@ exports.registerUser = async (req, res) => {
           email,
           password,
           confirmPassword,
+          pic
         });
         const token = generateToken(user._id);
         res.status(201).json({
@@ -57,7 +58,7 @@ exports.loggedInUser = async (req, res) => {
         token,
       });
     } else {
-      return thrownErrorMessage(res, 404, "user not found. With this Email id");
+      return thrownErrorMessage(res, 404, "Wrong credentials");
     }
   } catch (error) {
     return res.status(500).json({
@@ -177,7 +178,7 @@ exports.forgotPassword = async (req, res) => {
 
       await user.save();
 
-      const link = `http://localhost:3000/reset/${user._id}/${user.resetPasswordToken}`;
+      const link = `https://mobiotics.vercel.app/reset/${user._id}/${user.resetPasswordToken}`;
 
       // console.log(token)
       // console.log(link)

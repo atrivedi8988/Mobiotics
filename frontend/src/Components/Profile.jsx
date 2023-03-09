@@ -52,6 +52,7 @@ function Profile() {
             alt="Green double couch with wooden legs"
             borderRadius="lg"
             margin={"auto"}
+            height={"400px"}
           />
           <Stack mt="6" spacing="3">
             <Heading size="md">Name : {userInfo.name}</Heading>
