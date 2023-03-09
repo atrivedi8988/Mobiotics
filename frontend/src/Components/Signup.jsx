@@ -54,7 +54,7 @@ function Signup() {
   const postImage = (pics) => {
     setLoading(true);
     if (pics === undefined) {
-      alert(" i am Please select Image");
+      alert("Please select Image");
       setLoading(false);
       return;
     }
@@ -73,7 +73,7 @@ function Signup() {
       })
         .then((res) => res.json())
         .then((dat) => {
-          console.log(dat.url.toString())
+          // console.log(dat.url.toString())
           setFormState({
             ...formstate,
             pic : dat.url.toString()
@@ -85,7 +85,7 @@ function Signup() {
           setLoading(false);
         });
     } else {
-      alert("or mai Please select Image");
+      alert("Please select Image");
       setLoading(false);
       return;
     }

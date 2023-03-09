@@ -27,6 +27,7 @@ import { useNavigate } from "react-router-dom";
 function EditModal({ isOpen, onOpen, onClose }) {
   const [show, setShow] = useState(false);
   const handleClick = () => setShow(!show);
+  const [loading, setLoading] = useState(false);
   const [userInfo, setUserInfo] = useState({});
   const navigate = useNavigate();
   const [formstate, setFormState] = useState({
@@ -36,13 +37,13 @@ function EditModal({ isOpen, onOpen, onClose }) {
     confirmPassword: "",
     pic: "",
   });
-  const handleUserProfile = ()=>{
+  const handleUserProfile = () => {
     axios
-    .get("https://mobiotics.up.railway.app/api/user/profile")
-    .then((res) => {
-      setUserInfo(res.data);
-    });
-  }
+      .get("https://mobiotics.up.railway.app/api/user/profile")
+      .then((res) => {
+        setUserInfo(res.data);
+      });
+  };
   const handleChange = (e) => {
     const { name, value, files } = e.target;
     setUserInfo({
@@ -51,25 +52,63 @@ function EditModal({ isOpen, onOpen, onClose }) {
     });
   };
 
-  const handleEdit = async(id) => {
-    try {
-      let res = await axios.put(
-        `https://mobiotics.up.railway.app/api/user/update/${id}`,
-        userInfo
-      );
-      alert(res.data.message);
-      navigate("/profile");
-      handleUserProfile()
-    } catch (error) {
-      alert(error.response.data.message);
+  const handleEdit = (id) => {
+    axios
+      .put(`https://mobiotics.up.railway.app/api/user/update/${id}`, userInfo)
+      .then((res) => {
+        alert(res.data.message);
+        navigate("/profile");
+        onClose();
+      })
+      .then(() => {
+        handleUserProfile();
+        window.location.reload()
+      })
+      .catch((error) => alert(error.response.data.message));
+  };
+
+  const postImage = (pics) => {
+    setLoading(true);
+    if (pics === undefined) {
+      alert("Please select Image");
+      setLoading(false);
+      return;
+    }
+    // console.log(formstate.pic[0])
+    if (pics.type === "image/jpeg" || pics.type === "image/png") {
+      const data = new FormData();
+      data.append("file", pics);
+      data.append("upload_preset", "chit-chat-app");
+      data.append("cloud_name", "dwecsqtkp");
+      fetch("https://api.cloudinary.com/v1_1/dwecsqtkp/image/upload", {
+        method: "POST",
+        body: data,
+      })
+        .then((res) => res.json())
+        .then((dat) => {
+          // console.log(dat.url.toString())
+          setUserInfo({
+            ...userInfo,
+            pic: dat.url.toString(),
+          });
+          setLoading(false);
+        })
+        .catch((err) => {
+          console.log(err);
+          setLoading(false);
+        });
+    } else {
+      alert("Please select Image");
+      setLoading(false);
+      return;
     }
   };
 
   useEffect(() => {
-   handleUserProfile()
+    handleUserProfile();
   }, []);
 
-  console.log(userInfo);
+  // console.log(userInfo);
   // console.log(formstate.name);
 
   return (
@@ -165,7 +204,7 @@ function EditModal({ isOpen, onOpen, onClose }) {
                   type="file"
                   p={1.5}
                   accept="image/*"
-                  onChange={handleChange}
+                  onChange={(e) => postImage(e.target.files[0])}
                   name="pic"
                 />
               </FormControl>
@@ -177,8 +216,8 @@ function EditModal({ isOpen, onOpen, onClose }) {
               colorScheme="blue"
               width="100%"
               style={{ marginTop: 15 }}
-              onClick={()=>handleEdit(userInfo._id)}
-              //   isLoading={picLoading}
+              onClick={() => handleEdit(userInfo._id)}
+              isLoading={loading}
             >
               UPDATE
             </Button>
