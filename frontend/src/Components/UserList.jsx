@@ -13,38 +13,50 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Navigate, useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { EditIcon, DeleteIcon } from "@chakra-ui/icons";
 import EditModal from "./EditModal";
+import Pagination from "./Pagination";
 
 function UserList() {
+  const [searchparam,setSearchparam] = useSearchParams()
+
+  const [totalPages,setTotalPages] = useState(5)
+  const [page,setPage] = useState(1)
+  const [limit,setLimit] = useState(5)
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
 
-  const handleAllUsers = async () => {
+ 
+  
+  const handleAllUsers = async (page,limit) => {
+    
     try {
       let res = await axios.get(
-        "https://mobiotics.up.railway.app/api/user/admin/allusers"
-      );
-      if (res.data.success) {
-        setUsers(res.data.user);
+        `https://mobiotics.up.railway.app/api/user/admin/allusers?page=${page}&limit=${limit}`
+        );
+        if (res.data.success) {
+          setUsers(res.data.user);
+          // console.log(typeof total, limit)
+          setTotalPages(Math.ceil(res.data.totalPage/limit))
+        }
+      } catch (error) {
+        // alert(`${error.response.data.message}`);
+        toast({
+          title: error.response.data.message,
+          status: "error",
+          duration: 2000,
+          isClosable: true,
+        });
+        navigate("/profile");
       }
-    } catch (error) {
-      // alert(`${error.response.data.message}`);
-      toast({
-        title: error.response.data.message,
-        status: "error",
-        duration: 2000,
-        isClosable: true,
-      });
-      navigate("/profile");
-    }
-  };
-
-  const handleRole = async (id, role) => {
-    const value = role === "admin" ? "user" : "admin";
+    };
+    
+    
+    const handleRole = async (id, role) => {
+      const value = role === "admin" ? "user" : "admin";
     try {
       let res = await axios.patch(
         `https://mobiotics.up.railway.app/api/user/admin/assignadmin/${id}`,
@@ -59,7 +71,7 @@ function UserList() {
         duration: 2000,
         isClosable: true,
       });
-      handleAllUsers();
+      handleAllUsers(page,limit);
     } catch (error) {
       // alert(error.response.data.message);
       toast({
@@ -83,7 +95,7 @@ function UserList() {
         duration: 2000,
         isClosable: true,
       });
-      handleAllUsers();
+      handleAllUsers(page,limit);
     } catch (error) {
       // alert(error.response.data.message);
       toast({
@@ -96,8 +108,9 @@ function UserList() {
   };
 
   useEffect(() => {
-    handleAllUsers();
-  }, []);
+    setSearchparam({"page":page,"limit":limit})
+    handleAllUsers(page,limit);
+  }, [page,limit]);
 
   return (
     <>
@@ -146,6 +159,7 @@ function UserList() {
           })}
         </Tbody>
       </Table>
+      <Pagination total={totalPages} limit={limit} page={page} setPage={setPage}/>
     </>
   );
 }

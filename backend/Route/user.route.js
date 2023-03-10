@@ -11,6 +11,7 @@ const {
   updateProfile,
   deleteProfile,
   deleteUserByAdmin,
+  userPagination,
 } = require("../Controller/user.controller");
 
 const router = express.Router();
@@ -42,5 +43,8 @@ router.post("/forgot", forgotPassword);
 
 // Reset Password
 router.patch("/reset/:id/:token", resetPassword);
+
+// // Pagination Api all Users
+// router.get("/admin/allusers", isAuthenticate, isAuthorize, userPagination);
 
 module.exports = router;

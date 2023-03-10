@@ -11,7 +11,7 @@ const { sendEmail } = require("../Middlewares/sendEmail");
 
 exports.registerUser = async (req, res) => {
   try {
-    const { name, email, password, confirmPassword,pic } = req.body;
+    const { name, email, password, confirmPassword, pic } = req.body;
     if (strongPassword(password) === true) {
       if (password === confirmPassword) {
         const user = await User.create({
@@ -19,7 +19,7 @@ exports.registerUser = async (req, res) => {
           email,
           password,
           confirmPassword,
-          pic
+          pic,
         });
         const token = generateToken(user._id);
         res.status(201).json({
@@ -132,14 +132,25 @@ exports.deleteUserByAdmin = async (req, res) => {
   }
 };
 
-
 // Get All User --- Admin authorize
 
 exports.getAllUserByAdmin = async (req, res) => {
-  const user = await User.find();
+  const { page, limit } = req.query;
+  if (!page && !limit) {
+    const user = await User.find();
+    return res.status(200).json({
+      success: true,
+      user,
+    });
+  }
+  // console.log(page,limit)
+  const skip = limit * page - limit;
+  const user = await User.find().skip(skip).limit(limit);
+  const totalPage = await (await User.find()).length;
   res.status(200).json({
     success: true,
     user,
+    totalPage,
   });
 };
 
@@ -250,48 +261,24 @@ exports.resetPassword = async (req, res) => {
   } catch (error) {
     return thrownErrorMessage(res, 500, error.message);
   }
-
-  // sendToken(user, 200, res);
-
-  // if (token && id) {
-  //   // console.log(crypto.createHash("sha256").update(token).digest("hex"));
-  //   // console.log(id);
-  //   // console.log(await User.findById(id))
-  //   const user = await User.findOne({ resetPasswordToken: token });
-  //   // const user = await User.findById(id)
-  //   // console.log(user)
-  //   if (user) {
-  //     if (user.resetPasswordTokenExpiry > Date.now()) {
-  //       if (strongPassword(password) === true) {
-  //         if (password === confirmPassword) {
-  //           await User.findByIdAndUpdate(user._id, {
-  //             $set: { password },
-  //           });
-  //           user.resetPasswordToken = undefined;
-  //           user.resetPasswordTokenExpiry = undefined;
-
-  //           await user.save();
-  //           res.status(200).json({
-  //             success: true,
-  //             message: "Password changed successfully",
-  //           });
-  //         } else {
-  //           return thrownErrorMessage(
-  //             res,
-  //             400,
-  //             "Password and Confirm Password does not match"
-  //           );
-  //         }
-  //       } else {
-  //         return thrownErrorMessage(res, 400, strongPassword(password));
-  //       }
-  //     } else {
-  //       return thrownErrorMessage(res, 500, "token is Expired");
-  //     }
-  //   } else {
-  //     return thrownErrorMessage(res, 404, "User not found. Invalid Link");
-  //   }
-  // } else {
-  //   return thrownErrorMessage(res, 400, "Invalid Link");
-  // }
 };
+
+// exports.userPagination = async(req,res)=>{
+//   const {page,limit} = req.query
+//   if(!page&&!limit){
+//     const user = await User.find()
+//     return res.status(200).json({
+//       success: true,
+//       user
+//     })
+//   }
+//   // console.log(page,limit)
+//   const skip = (limit*page) - limit
+//   const user = await User.find().skip(skip).limit(limit)
+//   const totalPage = await (await User.find()).length
+//   res.status(200).json({
+//     success: true,
+//     user,
+//     totalPage
+//   })
+// }
